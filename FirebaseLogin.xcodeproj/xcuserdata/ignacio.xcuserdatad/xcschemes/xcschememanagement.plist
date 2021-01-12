@@ -7,7 +7,25 @@
 		<key>FirebaseLogin.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>14</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>4FA4EE8825AC84E20098E21F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4FA4EE9E25AC84E40098E21F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4FA4EEA925AC84E40098E21F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
