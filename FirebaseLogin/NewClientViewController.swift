@@ -10,6 +10,14 @@ import FirebaseDatabase
 
 class NewClientViewController: UIViewController {
 
+    let kDoneTitle = "Listo"
+    let kErrorTitle = "Error"
+    let kOkAction = "Ok"
+    let kClientSavedMessage = "Cliente guardado"
+    let kCompleteFieldsMessage = "Debes completar todos los campos"
+    let kEmptyField = 0
+    let kDateFormat = "dd-MM-yyyy"
+    
     @IBOutlet var nameTf: UITextField!
     @IBOutlet var lastnameTf: UITextField!
     @IBOutlet var ageTf: UITextField!
@@ -34,16 +42,16 @@ class NewClientViewController: UIViewController {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         
-        let doneBt = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(donePressed))
+        let doneBt = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(pickerDonePressed))
         toolbar.setItems([doneBt], animated: true)
         
         birthdateTf.inputAccessoryView = toolbar
         birthdateTf.inputView = datePicker
     }
     
-    @objc func donePressed() {
+    @objc func pickerDonePressed() {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy"
+        dateFormatter.dateFormat = kDateFormat
         birthdateTf.text = dateFormatter.string(from: datePicker.date)
         birthdateTf.resignFirstResponder()
     }
@@ -53,15 +61,15 @@ class NewClientViewController: UIViewController {
             let client = Client(name: nameTf.text ?? "", lastname: lastnameTf.text ?? "", age: ageTf.text ?? "", birthdate: birthdateTf.text ?? "")
             RealtimeDatabaseManager.saveNewClient(client: client)
             cleanAllFields()
-            showAlert(withTitle: "Listo", andMessage: "Cliente guardado")
+            showAlert(withTitle: kDoneTitle, andMessage: kClientSavedMessage)
         } else {
-            showAlert(withTitle: "Error", andMessage: "Debes completar todos los campos")
+            showAlert(withTitle: kErrorTitle, andMessage: kCompleteFieldsMessage)
         }
     }
     
     func allFieldsCompleted() -> Bool {
         var completed = false
-        if nameTf.text?.count ?? 0 > 0 && lastnameTf.text?.count ?? 0 > 0 && ageTf.text?.count ?? 0 > 0 && birthdateTf.text?.count ?? 0 > 0 {
+        if nameTf.text?.count ?? 0 > kEmptyField && lastnameTf.text?.count ?? 0 > kEmptyField && ageTf.text?.count ?? 0 > kEmptyField && birthdateTf.text?.count ?? 0 > kEmptyField {
             completed = true
         }
         return completed
@@ -76,7 +84,7 @@ class NewClientViewController: UIViewController {
     
     func showAlert(withTitle title: String, andMessage message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: kOkAction, style: .default, handler: nil))
         self.present(alert, animated: true)
     }
 }
@@ -107,6 +115,10 @@ extension NewClientViewController: UITextFieldDelegate {
         switch textField {
         case ageTf:
             let allowed = CharacterSet(charactersIn:"0123456789")
+            let characterSet = CharacterSet(charactersIn: string)
+            return allowed.isSuperset(of: characterSet)
+        case birthdateTf:
+            let allowed = CharacterSet(charactersIn:"-0123456789")
             let characterSet = CharacterSet(charactersIn: string)
             return allowed.isSuperset(of: characterSet)
         default:

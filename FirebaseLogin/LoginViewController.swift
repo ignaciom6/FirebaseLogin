@@ -12,6 +12,9 @@ import Firebase
 class LoginViewController: UIViewController {
     
     let kLoginSuccessSegue = "LoginSuccess"
+    let kErrorTitle = "Error"
+    let kOkAction = "Ok"
+    let kAccessError = "Debes dar acceso"
     @IBOutlet var newClientBtn: UIButton!
     
     override func viewDidLoad() {
@@ -27,11 +30,9 @@ class LoginViewController: UIViewController {
     func configureFacebookBtn() {
         let fbBtn = FBLoginButton()
         fbBtn.delegate = self
+        fbBtn.center = view.center
         
         self.view.addSubview(fbBtn)
-        fbBtn.translatesAutoresizingMaskIntoConstraints = false
-        fbBtn.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        fbBtn.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     @IBAction func newClientPressed(_ sender: Any) {
@@ -40,7 +41,7 @@ class LoginViewController: UIViewController {
     
     func showAlert(withTitle title: String, andMessage message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: kOkAction, style: .default, handler: nil))
         self.present(alert, animated: true)
     }
     
@@ -51,12 +52,12 @@ class LoginViewController: UIViewController {
 extension LoginViewController: LoginButtonDelegate {
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
         if let error = error {
-            showAlert(withTitle: "Error", andMessage: error.localizedDescription)
+            showAlert(withTitle: kErrorTitle, andMessage: error.localizedDescription)
             return
         }
         
         if AccessToken.current == nil {
-            showAlert(withTitle: "Error", andMessage: "Debes dar acceso")
+            showAlert(withTitle: kErrorTitle, andMessage: kAccessError)
             return
         }
 
@@ -65,7 +66,7 @@ extension LoginViewController: LoginButtonDelegate {
         Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
             if let error = error {
                 DispatchQueue.main.async {
-                    self?.showAlert(withTitle: "Error", andMessage: error.localizedDescription)
+                    self?.showAlert(withTitle: self?.kErrorTitle ?? "Error", andMessage: error.localizedDescription)
                 }
                 return
             }
@@ -81,7 +82,7 @@ extension LoginViewController: LoginButtonDelegate {
             try firebaseAuth.signOut()
             newClientBtn.isHidden = true
         } catch let signOutError as NSError {
-            showAlert(withTitle: "Error", andMessage: signOutError as! String)
+            showAlert(withTitle: kErrorTitle, andMessage: signOutError as! String)
         }
     }
     
